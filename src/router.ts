@@ -39,7 +39,8 @@ router.beforeEach((to: Route, from: Route, next) => {
     console.log(api);
     Vue.axios.get(api).then((response) => {
       const data = response.data;
-      console.log('data->', response.data);
+      // console.log('data->', response.data);
+      alert(JSON.stringify(data));
       if (data.code === 'SUCCESS' && data.data !== 'null') {
         user.set(data.data);
         next();
