@@ -36,7 +36,7 @@ router.beforeEach((to: Route, from: Route, next) => {
   const sid = to.query.sid as string;
   console.log('sid', sid);
   if (sid) {
-    const api = `http://localhost:8000/sunnyhouse/user?sid=${sid}`;
+    const api = `http://pspjjc.chenxiaofeng.vip/sunnyhouse/user?sid=${sid}`;
     console.log(api);
     Vue.axios.get(api).then((response) => {
       const data = response.data;
