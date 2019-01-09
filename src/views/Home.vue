@@ -8,7 +8,7 @@
         below
       </p>
       <el-button @click="sayHi">el-button</el-button>
-      <a href="/about">vue-router test</a>.
+      <a href="/profile">vue-router test</a>.
     </div>
     <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
