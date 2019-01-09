@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="Login">
     <h1>{{ msg }}</h1>
     <el-button @click="login">一键登录</el-button>
   </div>
@@ -9,10 +9,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import ElementUI from 'element-ui';
 
-export default class Home extends Vue {
+@Component({
+})
+export default class Login extends Vue {
   private msg = 'This is a login page';
   private login() {
-    location.href = 'pspjjc.chenxiaofeng.vip';
+    location.href = 'http://pspjjc.chenxiaofeng.vip/sunnyhouse';
   }
 }
 </script>

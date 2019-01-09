@@ -12,6 +12,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import ElementUI from 'element-ui';
 import * as user from '../models/user';
 
+@Component({
+})
 export default class Profile extends Vue {
   private loginUser: user.User = { openid: '0000' };
   private mounted() {
