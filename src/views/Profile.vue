@@ -17,7 +17,7 @@ import * as user from '../models/user';
 export default class Profile extends Vue {
   private loginUser: user.User = { openid: '0000' };
   private mounted() {
-    this.loginUser = user.get();
+    this.loginUser = user.get() as user.User;
   }
 }
 </script>

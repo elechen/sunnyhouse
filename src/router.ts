@@ -31,9 +31,25 @@ const router = new Router({
 });
 
 router.beforeEach((to: Route, from: Route, next) => {
-  if (to.redirectedFrom === 'pspjjc.chenxiaofeng.vip/sunnyhouse') {
-    user.set(to.query as any as user.User);
+  console.log(to.query);
+  const sid = to.query.sid as string;
+  console.log('sid', sid);
+  if (sid) {
+    const api = `http://localhost:8000/sunnyhouse/user?sid=${sid}`;
+    console.log(api);
+    Vue.axios.get(api).then((response) => {
+      const data = response.data;
+      console.log('data->', response.data);
+      if (data.code === 'SUCCESS' && data.data !== 'null') {
+        user.set(data.data);
+        next();
+      } else {
+        next('/login');
+      }
+    });
+    return;
   }
+
   if (to.name === 'login') {
     next();
   } else {

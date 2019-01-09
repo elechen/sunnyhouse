@@ -10,11 +10,16 @@ export interface User {
   'unionid'?: string;
 }
 
-let user: User;
+
 export function set(info: User) {
-  user = info;
+  sessionStorage.setItem('user', JSON.stringify(info));
 }
 
-export function get(): User {
-  return user;
+export function get(): User | null {
+  const cache = sessionStorage.getItem('user');
+  if (cache) {
+    return JSON.parse(cache);
+  } else {
+    return null;
+  }
 }
