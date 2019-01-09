@@ -1,10 +1,11 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import Router, { Route } from 'vue-router';
 import Home from './views/Home.vue';
+import * as user from './models/user';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -28,3 +29,20 @@ export default new Router({
     },
   ],
 });
+
+router.beforeEach((to: Route, from: Route, next) => {
+  if (to.redirectedFrom === 'pspjjc.chenxiaofeng.vip/sunnyhouse') {
+    user.set(to.query as any as user.User);
+  }
+  if (to.name === 'login') {
+    next();
+  } else {
+    if (user.get()) {
+      next();
+    } else {
+      next('/login');
+    }
+  }
+});
+
+export default router;
