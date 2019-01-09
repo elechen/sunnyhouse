@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router, { Route } from 'vue-router';
 import Home from './views/Home.vue';
 import * as user from './models/user';
+import ElementUI from 'element-ui';
 
 Vue.use(Router);
 
@@ -40,7 +41,7 @@ router.beforeEach((to: Route, from: Route, next) => {
     Vue.axios.get(api).then((response) => {
       const data = response.data;
       // console.log('data->', response.data);
-      alert(JSON.stringify(data));
+      ElementUI.MessageBox(JSON.stringify(data));
       if (data.code === 'SUCCESS' && data.data !== 'null') {
         user.set(data.data);
         next();
