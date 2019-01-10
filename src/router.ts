@@ -48,8 +48,8 @@ router.beforeEach((to: Route, from: Route, next) => {
           user.set(data.data);
           next();
         } else {
-          ElementUI.MessageBox(data.msg);
           next('/login');
+          ElementUI.MessageBox(data.msg);
         }
       } else {
         next('/login');
