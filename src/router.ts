@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Router, { Route } from 'vue-router';
 import Home from './views/Home.vue';
 import * as user from './models/user';
-import ElementUI from 'element-ui';
 
 Vue.use(Router);
 
@@ -33,6 +32,11 @@ const router = new Router({
       name: 'profile',
       component: () => import(/* webpackChunkName: "profile" */ './views/Profile.vue'),
     },
+    {
+      path: '/agreement',
+      name: 'agreement',
+      component: () => import(/* webpackChunkName: "agreement" */ './views/Agreement.vue'),
+    },
   ],
 });
 
@@ -48,8 +52,7 @@ router.beforeEach((to: Route, from: Route, next) => {
           user.set(data.data);
           next();
         } else {
-          // next('/login');
-          ElementUI.MessageBox(data.msg);
+          next('/login');
         }
       } else {
         next('/login');
