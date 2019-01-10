@@ -43,9 +43,14 @@ router.beforeEach((to: Route, from: Route, next) => {
     // const api = `http://localhost:8000/sunnyhouse/user?sid=${sid}`;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
-      if (data.code === 'SUCCESS' && data.data) {
-        user.set(data.data);
-        next();
+      if (data.code === 'SUCCESS') {
+        if (data.data) {
+          user.set(data.data);
+          next();
+        } else {
+          ElementUI.MessageBox(data.msg);
+          next('/login');
+        }
       } else {
         next('/login');
       }
