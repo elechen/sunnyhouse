@@ -10,7 +10,6 @@ export interface User {
   'unionid'?: string;
 }
 
-
 export function set(info: User) {
   sessionStorage.setItem('user', JSON.stringify(info));
 }

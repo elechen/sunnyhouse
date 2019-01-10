@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ElementUI from 'element-ui';
 
 @Component({
 })

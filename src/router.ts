@@ -37,17 +37,13 @@ const router = new Router({
 });
 
 router.beforeEach((to: Route, from: Route, next) => {
-  console.log(to.query);
   const sid = to.query.sid as string;
-  console.log('sid', sid);
   if (sid) {
     const api = `http://pspjjc.chenxiaofeng.vip/sunnyhouse/user?sid=${sid}`;
-    console.log(api);
+    // const api = `http://localhost:8000/sunnyhouse/user?sid=${sid}`;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
-      // console.log('data->', response.data);
-      ElementUI.MessageBox(JSON.stringify(data));
-      if (data.code === 'SUCCESS' && data.data !== 'null') {
+      if (data.code === 'SUCCESS' && data.data) {
         user.set(data.data);
         next();
       } else {
