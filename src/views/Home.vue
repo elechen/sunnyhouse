@@ -155,14 +155,14 @@ export default class Home extends Vue {
   private loginUser: user.User = { openid: '0000' };
   private shortMsg = '完善个人信息，可使用信用卡支付';
   private stateMsg = '未签约';
-  // private formData: FORMDATA = {};
-  private formData: FORMDATA = {
-    id: '123456789123456789',
-    name: 'testman',
-    phone: '12345678912',
-    room: '110',
-    code: '1234',
-  };
+  private formData: FORMDATA = {};
+  // private formData: FORMDATA = {
+  //   id: '123456789123456789',
+  //   name: 'testman',
+  //   phone: '12345678912',
+  //   room: '110',
+  //   code: '1234',
+  // };
 
   private registerData: FORMDATA = {};
 
