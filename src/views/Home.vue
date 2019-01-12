@@ -12,82 +12,119 @@
         </div>
       </div>
     </div>
-    <div class="weui-cells__title">{{shortMsg}}</div>
-    <div class="weui-cells weui-cells_form">
-      <div class="weui-cell">
-        <div class="weui-cell__hd">
-          <label class="weui-label">身份证</label>
+    <div id="form">
+      <div class="weui-cells__title">{{shortMsg}}</div>
+      <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">身份证</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input
+              v-model="formData.id"
+              class="weui-input"
+              type="text"
+              required
+              pattern="REG_IDNUM"
+              placeholder="请输入身份证号"
+              notMatchTips="请输入正确的身份证号码"
+            >
+          </div>
         </div>
-        <div class="weui-cell__bd">
-          <input class="weui-input" placeholder="请输入身份证号">
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">姓名</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" v-model="formData.name" required placeholder="请输入姓名">
+          </div>
         </div>
-      </div>
-      <div class="weui-cell">
-        <div class="weui-cell__hd">
-          <label class="weui-label">姓名</label>
+        <div class="weui-cell weui-cell_vcode">
+          <div class="weui-cell__hd">
+            <label class="weui-label">手机号</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input
+              v-model="formData.phone"
+              class="weui-input"
+              type="number"
+              required
+              pattern="[0-9]{11}"
+              placeholder="请输入手机号"
+              notMatchTips="请输入正确的手机号"
+            >
+          </div>
+          <div class="weui-cell__ft">
+            <button class="weui-vcode-btn" @click="onGetVerificationCode">获取验证码</button>
+          </div>
         </div>
-        <div class="weui-cell__bd">
-          <input class="weui-input" placeholder="请输入姓名">
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">验证码</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input
+              v-model="formData.code"
+              class="weui-input"
+              required
+              type="number"
+              placeholder="请输入验证码"
+            >
+          </div>
         </div>
-      </div>
-      <div class="weui-cell weui-cell_vcode">
-        <div class="weui-cell__hd">
-          <label class="weui-label">手机号</label>
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
+            <label class="weui-label">房间号</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input
+              v-model="formData.room"
+              class="weui-input"
+              required
+              type="number"
+              placeholder="请输入房间号"
+            >
+          </div>
         </div>
-        <div class="weui-cell__bd">
-          <input class="weui-input" type="number" placeholder="请输入手机号">
-        </div>
-        <div class="weui-cell__ft">
-          <button class="weui-vcode-btn" @click="onGetVerificationCode">获取验证码</button>
-        </div>
-      </div>
-      <div class="weui-cell">
-        <div class="weui-cell__hd">
-          <label class="weui-label">验证码</label>
-        </div>
-        <div class="weui-cell__bd">
-          <input class="weui-input" type="number" placeholder="请输入验证码">
-        </div>
-      </div>
-      <div class="weui-cell">
-        <div class="weui-cell__hd">
-          <label class="weui-label">房间号</label>
-        </div>
-        <div class="weui-cell__bd">
-          <input class="weui-input" type="number" placeholder="请输入房间号">
-        </div>
-      </div>
-      <div class="weui-cell" id="uploaderCustom">
-        <div class="weui-cell__bd">
-          <div class="weui-uploader">
-            <div class="weui-uploader__hd">
-              <p class="weui-uploader__title">上传身份证正反面照片({{uploadCustomFileList.length}}/2)</p>
-            </div>
-            <div class="weui-uploader__bd">
-              <ul class="weui-uploader__files" id="uploaderCustomFiles" @click="onPreviewImg"></ul>
-              <div class="weui-uploader__input-box">
-                <input
-                  id="uploaderCustomInput"
-                  class="weui-uploader__input"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                >
+        <div class="weui-cell" id="uploaderCustom">
+          <div class="weui-cell__bd">
+            <div class="weui-uploader">
+              <div class="weui-uploader__hd">
+                <p class="weui-uploader__title">上传身份证正反面照片({{uploadCustomFileList.length}}/2)</p>
+              </div>
+              <div class="weui-uploader__bd">
+                <ul @click="onPreviewImg" class="weui-uploader__files" id="uploaderCustomFiles">
+                  <li
+                    v-for="(imgurl, index) in registerData.idimgurl"
+                    :key="index"
+                    class="weui-uploader__file"
+                    :style="{'background-image': 'url(' + imgurl + ')'}"
+                  ></li>
+                </ul>
+                <div class="weui-uploader__input-box">
+                  <input
+                    id="uploaderCustomInput"
+                    class="weui-uploader__input"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                  >
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <label for="weuiAgree" class="weui-agree">
-      <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
-      <span class="weui-agree__text">
-        阅读并同意
-        <a href="/agreement">《相关条款》</a>
-      </span>
-    </label>
-    <div class="weui-btn-area">
-      <a class="weui-btn weui-btn_primary" @click="onSubmit">确定</a>
+      <label for="weuiAgree" class="weui-agree">
+        <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+        <span class="weui-agree__text">
+          阅读并同意
+          <a @click="$router.push('/agreement');">《相关条款》</a>
+        </span>
+      </label>
+      <div class="weui-btn-area">
+        <a class="weui-btn weui-btn_primary" @click="onSubmit">确定</a>
+      </div>
     </div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
   </div>
@@ -99,6 +136,16 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import * as user from '../models/user';
 const weui = require('weui.js');
 
+interface FORMDATA {
+  openid?: string;
+  id?: string;
+  name?: string;
+  phone?: string;
+  code?: string;
+  room?: string;
+  idimgurl?: string[];
+}
+
 @Component({
   components: {
     HelloWorld,
@@ -106,19 +153,55 @@ const weui = require('weui.js');
 })
 export default class Home extends Vue {
   private loginUser: user.User = { openid: '0000' };
-  private shortMsg = '完善个人信息，可在线支付账单';
+  private shortMsg = '完善个人信息，可使用信用卡支付';
   private stateMsg = '未签约';
+  // private formData: FORMDATA = {};
+  private formData: FORMDATA = {
+    id: '123456789123456789',
+    name: 'testman',
+    phone: '12345678912',
+    room: '110',
+    code: '1234',
+  };
+
+  private registerData: FORMDATA = {};
 
   private uploadCustomFileList: any[] = [];
+  private uploadCustomFileUrl: string[] = [];
+  private uploadImageCallback: any;
 
   private mounted() {
     this.loginUser = user.get() as user.User;
+    this.RegisterWeUI();
+    this.RequestRegisterData();
+  }
+
+  private RequestRegisterData() {
+    const openid = this.loginUser.openid;
+    const api = 'http://localhost:8000/sunnyhouse/register?openid=' + openid;
+    Vue.axios.get(api).then((response) => {
+      const data = response.data;
+      console.log('RegisterData', data);
+      if (data && data.code === 'SUCCESS') {
+        const userData = data.data as FORMDATA;
+        if (userData) {
+          this.formData = { ...userData };
+          this.registerData = { ...userData };
+          this.stateMsg = '资料已提交，等待管理员审核';
+        }
+      }
+    });
+  }
+
+  private RegisterWeUI() {
     const that = this;
     weui.uploader('#uploaderCustom', {
-      url: 'http://localhost:8002/upload',
+      url: 'http://localhost:8000/sunnyhouse/upload',
       auto: false,
       onQueued() {
         that.uploadCustomFileList.push(this);
+        // 打算上传新的话，先清空原来的
+        that.registerData.idimgurl = [];
       },
       onBeforeQueued(files: any) {
         if (['image/jpg', 'image/jpeg', 'image/png', 'image/gif'].indexOf(this.type) < 0) {
@@ -136,10 +219,30 @@ export default class Home extends Vue {
           return false;
         }
       },
+      onSuccess(ret: { code: string, url: string }) {
+        console.log('onSuccess', this, ret);
+        if (ret.url) {
+          that.uploadCustomFileUrl.push(ret.url);
+        } else {
+          that.uploadCustomFileUrl.push('error');
+        }
+        if (that.uploadCustomFileUrl.length === that.uploadCustomFileList.length) {
+          that.uploadImageCallback(that.uploadCustomFileUrl);
+        }
+      },
+      onError(err: any) {
+        console.log(this, err);
+        that.uploadCustomFileUrl.push('error');
+        if (that.uploadCustomFileUrl.length === that.uploadCustomFileList.length) {
+          that.uploadImageCallback(that.uploadCustomFileUrl);
+        }
+      },
     });
   }
 
-  private uploadFileList() {
+  private uploadImage(cb: (url: string[]) => void) {
+    this.uploadImageCallback = cb;
+    this.uploadCustomFileUrl = [];
     this.uploadCustomFileList.forEach((file) => {
       file.upload();
     });
@@ -180,11 +283,54 @@ export default class Home extends Vue {
   }
 
   private onSubmit() {
-    const msg = '资料已提交，等待管理员审核';
-    this.stateMsg = msg;
-    this.uploadFileList();
-    weui.toast('资料已提交', {
-      duration: 1000,
+    weui.form.validate('#form', (error: { dom: object, msg: string }) => {
+      if (!error) {
+        if (this.registerData.idimgurl && this.registerData.idimgurl.length === 2) {
+          if (JSON.stringify(this.formData) === JSON.stringify(this.registerData)) {
+            weui.alert('数据没有变化，无需重复提交');
+            return;
+          }
+          this.PostFormData();
+        } else {
+          if (this.uploadCustomFileList.length < 2) {
+            weui.alert('请上传身份证正反面照片各一张');
+            return;
+          }
+          const loading = weui.loading('提交中...');
+          this.uploadImage((urls: string[]) => {
+            loading.hide();
+            if (urls.indexOf('error') !== -1) {
+              weui.alert('照片上传失败，请重试');
+            } else {
+              this.formData.idimgurl = urls;
+              this.formData.openid = this.loginUser.openid;
+              this.PostFormData();
+            }
+          });
+        }
+      }
+    }, {
+        regexp: {
+          IDNUM: /(?:^\d{15}$)|(?:^\d{18}$)|^\d{17}[\dXx]$/,
+        },
+      },
+    );
+  }
+
+  private PostFormData() {
+    const api = 'http://localhost:8000/sunnyhouse/register';
+    console.log('PostFormData', api, this.formData);
+    Vue.axios.post(api, this.formData).then((response) => {
+      const data = response.data;
+      if (data.code === 'SUCCESS') {
+        if (data.msg) {
+          weui.alert('提交异常\n' + data.msg);
+        } else {
+          weui.toast('提交成功', 1000);
+        }
+      } else {
+        weui.alert('网络异常\n' + response);
+      }
     });
   }
 
