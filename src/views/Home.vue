@@ -136,6 +136,8 @@ import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import * as user from '../models/user';
 const weui = require('weui.js');
 
+const DEV = true;
+
 interface FORMDATA {
   openid?: string;
   id?: string;
@@ -178,7 +180,8 @@ export default class Home extends Vue {
 
   private RequestRegisterData() {
     const openid = this.loginUser.openid;
-    const api = 'http://localhost:8000/sunnyhouse/register?openid=' + openid;
+    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.com';
+    const api = host + '/sunnyhouse/register?openid=' + openid;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
       console.log('RegisterData', data);
@@ -195,8 +198,9 @@ export default class Home extends Vue {
 
   private RegisterWeUI() {
     const that = this;
+    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.com';
     weui.uploader('#uploaderCustom', {
-      url: 'http://localhost:8000/sunnyhouse/upload',
+      url: host + '/sunnyhouse/upload',
       auto: false,
       onQueued() {
         that.uploadCustomFileList.push(this);
@@ -318,7 +322,8 @@ export default class Home extends Vue {
   }
 
   private PostFormData() {
-    const api = 'http://localhost:8000/sunnyhouse/register';
+    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.com';
+    const api = host + '/sunnyhouse/register';
     console.log('PostFormData', api, this.formData);
     Vue.axios.post(api, this.formData).then((response) => {
       const data = response.data;
