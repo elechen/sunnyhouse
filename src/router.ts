@@ -37,6 +37,11 @@ const router = new Router({
       name: 'agreement',
       component: () => import(/* webpackChunkName: "agreement" */ './views/Agreement.vue'),
     },
+    {
+      path: '/manager',
+      name: 'manager',
+      component: () => import(/* webpackChunkName: "manager" */ './views/Manager.vue'),
+    },
   ],
 });
 

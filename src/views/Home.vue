@@ -17,6 +17,14 @@
       <div class="weui-cells weui-cells_form">
         <div class="weui-cell">
           <div class="weui-cell__hd">
+            <label class="weui-label">姓名</label>
+          </div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" v-model="formData.name" required placeholder="请输入姓名">
+          </div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__hd">
             <label class="weui-label">身份证</label>
           </div>
           <div class="weui-cell__bd">
@@ -29,14 +37,6 @@
               placeholder="请输入身份证号"
               notMatchTips="请输入正确的身份证号码"
             >
-          </div>
-        </div>
-        <div class="weui-cell">
-          <div class="weui-cell__hd">
-            <label class="weui-label">姓名</label>
-          </div>
-          <div class="weui-cell__bd">
-            <input class="weui-input" v-model="formData.name" required placeholder="请输入姓名">
           </div>
         </div>
         <div class="weui-cell weui-cell_vcode">
@@ -135,17 +135,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import * as user from '../models/user';
 const weui = require('weui.js');
+import { DATA } from '@/models/register.ts';
+const DEV = true;
 
-const DEV = false;
-
-interface FORMDATA {
-  openid?: string;
-  id?: string;
-  name?: string;
-  phone?: string;
+interface FORMDATA extends DATA {
   code?: string;
-  room?: string;
-  idimgurl?: string[];
 }
 
 @Component({
@@ -325,6 +319,7 @@ export default class Home extends Vue {
     const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.vip';
     const api = host + '/sunnyhouse/register';
     console.log('PostFormData', api, this.formData);
+    this.formData.state = 1;
     Vue.axios.post(api, this.formData).then((response) => {
       const data = response.data;
       if (data.code === 'SUCCESS') {

@@ -19,11 +19,11 @@ export function get(): User | null {
   if (cache) {
     return JSON.parse(cache);
   } else {
-    return null;
-    // return {
-    //   openid: '10000',
-    //   nickname: '陈晓峰',
-    //   headimgurl: 'http://thirdwx.qlogo.cn/mmopen/vi_32/lJrubpXQ6BfZauRwkwRNSDWKGxRY78tEsicoFxt43kMiabkj0FP78wBJ7CgiaQO6iaqBJnQGUCPXia07ZiaoelJdzkjA/132',
-    // };
+    // return null;
+    return {
+      openid: '10000',
+      nickname: '陈晓峰',
+      headimgurl: 'http://thirdwx.qlogo.cn/mmopen/vi_32/lJrubpXQ6BfZauRwkwRNSDWKGxRY78tEsicoFxt43kMiabkj0FP78wBJ7CgiaQO6iaqBJnQGUCPXia07ZiaoelJdzkjA/132',
+    };
   }
 }
