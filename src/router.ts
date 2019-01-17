@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Router, { Route } from 'vue-router';
-import Home from './views/Home.vue';
-import * as user from './models/user';
+import Home from '@/views/Home.vue';
+import * as user from '@/models/user';
+import * as define from '@/defines/define';
 
 Vue.use(Router);
 
@@ -13,6 +14,9 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home,
+      meta: {
+        title: '阳光公寓-首页',
+      },
     },
     {
       path: '/about',
@@ -21,35 +25,61 @@ const router = new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      meta: {
+        title: '阳光公寓-关于',
+      },
     },
     {
       path: '/login',
       name: 'login',
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+      meta: {
+        title: '阳光公寓-登录',
+      },
     },
     {
       path: '/profile',
       name: 'profile',
       component: () => import(/* webpackChunkName: "profile" */ './views/Profile.vue'),
+      meta: {
+        title: '阳光公寓-信息',
+      },
     },
     {
       path: '/agreement',
       name: 'agreement',
       component: () => import(/* webpackChunkName: "agreement" */ './views/Agreement.vue'),
+      meta: {
+        title: '阳光公寓-协议',
+      },
     },
     {
       path: '/manager',
       name: 'manager',
       component: () => import(/* webpackChunkName: "manager" */ './views/Manager.vue'),
+      meta: {
+        title: '阳光公寓-管理',
+      },
+    },
+    {
+      path: '/contract',
+      name: 'contract',
+      component: () => import(/* webpackChunkName: "contract" */ './views/Contract.vue'),
+      meta: {
+        title: '阳光公寓-合约',
+      },
     },
   ],
 });
 
 router.beforeEach((to: Route, from: Route, next) => {
   const sid = to.query.sid as string;
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
   if (sid) {
-    const api = `http://pspjjc.chenxiaofeng.vip/sunnyhouse/user?sid=${sid}`;
-    // const api = `http://localhost:8000/sunnyhouse/user?sid=${sid}`;
+    const host = define.API_HOST;
+    const api = `${host}/sunnyhouse/user?sid=${sid}`;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
       if (data.code === 'SUCCESS') {

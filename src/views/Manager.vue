@@ -1,15 +1,11 @@
 <template>
-  <div class="manager">
+  <div class="manager" style="transform-style: preserve-3d;">
     <div @click="show=!show" class="weui-flex category">
       <p class="weui-flex__item">菜单</p>
       <img src="https://weui.io/images/icon_nav_form.png" alt>
     </div>
-    <transition
-      name="custom-classes-transition"
-      enter-active-class="animated fadeInDown faster"
-      leave-active-class="animated fadeOutUp faster"
-    >
-      <div v-if="show" class="weui-cells weui-cells-first">
+    <transition enter-active-class="animated fadeInDown faster">
+      <nav v-if="show" class="weui-cells weui-cells-first">
         <a
           v-for="(v, idx) in btns"
           v-bind:key="idx"
@@ -17,26 +13,30 @@
           class="weui-cell weui-cell_access"
         >
           <div class="weui-cell__bd">
-            <p :style="!v.visible ? 'color: #888888;' : ''">{{v.name}}</p>
+            <p :style="!v.selected ? 'color: #888888;' : ''">{{v.name}}</p>
           </div>
           <div class="weui-cell__ft"></div>
         </a>
-      </div>
+      </nav>
     </transition>
-    <div class="weui-cells__title">{{curPage}}</div>
+    <div class="weui-cells__title">{{pageName}}</div>
     <div class="weui-cells" :class="classObject">
-      <div class="weui-cell weui-cell_access" v-for="(v, idx) in filerUser" v-bind:key="idx">
-        <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
-          <img
-            src="https://weui.io/images/pic_160.png"
-            style="width: 50px;height: 50px;display: block"
-          >
+      <div v-if="filerUser.length > 0">
+        <div class="weui-cell weui-cell_access" v-for="(v, idx) in filerUser" v-bind:key="idx">
+          <div class="weui-cell__hd" style="position: relative;margin-right: 10px;">
+            <img :src="v.headimgurl" style="width: 50px;height: 50px;display: block">
+          </div>
+          <div @click="showContract(v)" class="weui-cell__bd">
+            <p>{{v.name}}</p>
+            <p style="font-size: 13px;color: #888888;">{{v.shortdesc}}</p>
+          </div>
+          <div class="weui-cell__ft"></div>
         </div>
-        <div class="weui-cell__bd">
-          <p>{{v.name}}</p>
-          <p style="font-size: 13px;color: #888888;">摘要信息</p>
+      </div>
+      <div v-else>
+        <div class="weui-loadmore weui-loadmore_line">
+          <span class="weui-loadmore__tips">暂无数据</span>
         </div>
-        <div class="weui-cell__ft"></div>
       </div>
     </div>
   </div>
@@ -46,38 +46,58 @@
 import { Component, Vue } from 'vue-property-decorator';
 import 'animate.css';
 import * as user from '@/models/user';
-import { DATA } from '@/models/register.ts';
-const DEV = true;
+import * as contract from '@/models/contract';
+import * as register from '@/models/register.ts';
+import * as define from '@/defines/define';
+
+const CONTRACT_STATE = 4;
+interface RegisterData extends register.DATA {
+  shortdesc?: string;
+  tmpcontractid?: string;
+}
 
 @Component
 export default class Manager extends Vue {
   private show = false;
-  private curPage = '已签约';
-  private curState = 3;
+  private curState = register.STATE.reviewed;
   private btns = [
-    { name: '待审核', state: 1, visible: false },
-    { name: '待签约', state: 2, visible: false },
-    { name: '已签约', state: 3, visible: true },
-    { name: '已退租', state: 4, visible: false },
+    { name: '待审核', state: register.STATE.reviewing, selected: false },
+    { name: '已审核', state: register.STATE.reviewed, selected: true },
+    { name: '已退租', state: register.STATE.left, selected: false },
+    { name: '待签约', state: register.STATE.contract, selected: false },
   ];
   private classObject = '';
-  private userInfo: DATA[] = [];
+  private userInfo: register.DATA[] = [];
   private loginUser: user.User = { openid: '0000' };
+  private newContract: contract.DATA[] = [];
 
   private mounted() {
     this.loginUser = user.get() as user.User;
     this.RequestRegisterData();
+    this.RequestNewContractData();
   }
 
   private RequestRegisterData() {
     const openid = 'all';
-    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.vip';
+    const host = define.API_HOST;
     const api = host + '/sunnyhouse/register?openid=' + openid;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
       console.log('RegisterData', data);
       if (data && data.code === 'SUCCESS') {
-        this.userInfo = data.data as DATA[];
+        this.userInfo = data.data as register.DATA[];
+      }
+    });
+  }
+
+  private RequestNewContractData() {
+    const host = define.API_HOST;
+    const api = host + '/sunnyhouse/contract/new/?detail=1';
+    Vue.axios.get(api).then((response) => {
+      const data = response.data;
+      console.log('NewContractData', data);
+      if (data && data.code === 'SUCCESS' && data.data) {
+        this.newContract = data.data as contract.DATA[];
       }
     });
   }
@@ -88,11 +108,18 @@ export default class Manager extends Vue {
     }
     const btn = this.btns[state - 1];
     this.curState = state;
-    this.curPage = btn.name;
     this.btns.forEach((element) => {
-      element.visible = element.state === state;
+      element.selected = element.state === state;
     });
     this.showSwitchAni();
+  }
+
+  private showContract(data: RegisterData) {
+    if (data.tmpcontractid) {
+      this.$router.push('contract?contractid=' + data.tmpcontractid);
+    } else {
+      this.$router.push('profile?openid=' + data.openid);
+    }
   }
 
   private showSwitchAni() {
@@ -103,9 +130,34 @@ export default class Manager extends Vue {
   }
 
   get filerUser() {
-    return this.userInfo.filter((one) => {
-      return one.state === this.curState;
-    });
+    const userInfoList: RegisterData[] = [];
+    if (this.curState === CONTRACT_STATE) {
+      for (const c of this.newContract) {
+        for (const u of this.userInfo) {
+          if (u.openid === c.openid) {
+            const tmpcontractid = c.contractid;
+            const shortdesc = `${c.room}房间待签约`;
+            userInfoList.push({ ...u, tmpcontractid, shortdesc });
+          }
+        }
+      }
+    } else {
+      for (const one of this.userInfo) {
+        if (one.state === this.curState) {
+          const shortdesc = register.StateDesc[one.state];
+          userInfoList.push({ ...one, shortdesc });
+        }
+      }
+    }
+    return userInfoList;
+  }
+
+  get pageName() {
+    for (const element of this.btns) {
+      if (element.state === this.curState) {
+        return element.name;
+      }
+    }
   }
 }
 
@@ -117,6 +169,10 @@ img {
   height: 30px;
 }
 
+nav {
+  transform: translateZ(1em);
+}
+
 li:first-child {
   margin-top: 0;
 }
@@ -126,6 +182,7 @@ li:first-child {
   overflow: hidden;
   border-radius: 2px;
   cursor: pointer;
+  transform: translateZ(999em);
 }
 
 .weui-cells-first {

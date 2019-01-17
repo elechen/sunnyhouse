@@ -5,6 +5,8 @@ import router from './router';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
+import Footer from '@/components/Footer.vue';
+Vue.component('Footer', Footer);
 
 Vue.config.productionTip = false;
 

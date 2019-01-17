@@ -72,20 +72,6 @@
             >
           </div>
         </div>
-        <div class="weui-cell">
-          <div class="weui-cell__hd">
-            <label class="weui-label">房间号</label>
-          </div>
-          <div class="weui-cell__bd">
-            <input
-              v-model="formData.room"
-              class="weui-input"
-              required
-              type="number"
-              placeholder="请输入房间号"
-            >
-          </div>
-        </div>
         <div class="weui-cell" id="uploaderCustom">
           <div class="weui-cell__bd">
             <div class="weui-uploader">
@@ -132,13 +118,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-import * as user from '../models/user';
 const weui = require('weui.js');
-import { DATA } from '@/models/register.ts';
-const DEV = true;
+import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import * as user from '@/models/user';
+import * as define from '@/defines/define';
+import * as register from '@/models/register.ts';
 
-interface FORMDATA extends DATA {
+interface FORMDATA extends register.DATA {
   code?: string;
 }
 
@@ -156,11 +142,10 @@ export default class Home extends Vue {
   //   id: '123456789123456789',
   //   name: 'testman',
   //   phone: '12345678912',
-  //   room: '110',
   //   code: '1234',
   // };
 
-  private registerData: FORMDATA = {};
+  private registerData: register.DATA = {};
 
   private uploadCustomFileList: any[] = [];
   private uploadCustomFileUrl: string[] = [];
@@ -174,13 +159,13 @@ export default class Home extends Vue {
 
   private RequestRegisterData() {
     const openid = this.loginUser.openid;
-    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.vip';
+    const host = define.API_HOST;
     const api = host + '/sunnyhouse/register?openid=' + openid;
     Vue.axios.get(api).then((response) => {
       const data = response.data;
       console.log('RegisterData', data);
       if (data && data.code === 'SUCCESS') {
-        const userData = data.data as FORMDATA;
+        const userData = data.data as register.DATA;
         if (userData) {
           this.formData = { ...userData };
           this.registerData = { ...userData };
@@ -192,7 +177,7 @@ export default class Home extends Vue {
 
   private RegisterWeUI() {
     const that = this;
-    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.vip';
+    const host = define.API_HOST;
     weui.uploader('#uploaderCustom', {
       url: host + '/sunnyhouse/upload',
       auto: false,
@@ -217,10 +202,10 @@ export default class Home extends Vue {
           return false;
         }
       },
-      onSuccess(ret: { code: string, url: string }) {
+      onSuccess(ret: { code: string, data: { [key: string]: string } }) {
         console.log('onSuccess', this, ret);
-        if (ret.url) {
-          that.uploadCustomFileUrl.push(ret.url);
+        if (ret.data && ret.data.url) {
+          that.uploadCustomFileUrl.push(ret.data.url);
         } else {
           that.uploadCustomFileUrl.push('error');
         }
@@ -301,7 +286,6 @@ export default class Home extends Vue {
               weui.alert('照片上传失败，请重试');
             } else {
               this.formData.idimgurl = urls;
-              this.formData.openid = this.loginUser.openid;
               this.PostFormData();
             }
           });
@@ -316,10 +300,12 @@ export default class Home extends Vue {
   }
 
   private PostFormData() {
-    const host = DEV ? 'http://localhost:8000' : 'http://pspjjc.chenxiaofeng.vip';
+    this.formData.openid = this.loginUser.openid;
+    this.formData.headimgurl = this.loginUser.headimgurl;
+    this.formData.state = register.STATE.reviewing;
+    const host = define.API_HOST;
     const api = host + '/sunnyhouse/register';
     console.log('PostFormData', api, this.formData);
-    this.formData.state = 1;
     Vue.axios.post(api, this.formData).then((response) => {
       const data = response.data;
       if (data.code === 'SUCCESS') {

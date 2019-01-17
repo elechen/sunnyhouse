@@ -1,3 +1,5 @@
+import * as define from '@/defines/define';
+
 export interface User {
   'openid'?: string;
   'nickname'?: string;
@@ -14,12 +16,11 @@ export function set(info: User) {
   sessionStorage.setItem('user', JSON.stringify(info));
 }
 
-export function get(): User | null {
+export function get(): User | undefined {
   const cache = sessionStorage.getItem('user');
   if (cache) {
     return JSON.parse(cache);
-  } else {
-    // return null;
+  } else if (define.DEV) {
     return {
       openid: '10000',
       nickname: '陈晓峰',
