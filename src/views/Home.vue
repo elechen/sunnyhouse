@@ -110,6 +110,7 @@
       </label>
       <div class="weui-btn-area">
         <a class="weui-btn weui-btn_primary" @click="onSubmit">确定</a>
+        <a v-if="isAdmin" class="weui-btn weui-btn_default" @click="$router.push('/manager');">管理</a>
       </div>
     </div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
@@ -122,6 +123,7 @@ const weui = require('weui.js');
 import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import * as user from '@/models/user';
 import * as define from '@/defines/define';
+import * as utils from '@/utils/utils';
 import * as register from '@/models/register.ts';
 
 interface FORMDATA extends register.DATA {
@@ -138,6 +140,7 @@ export default class Home extends Vue {
   private shortMsg = '完善个人信息，可使用信用卡支付';
   private stateMsg = '未签约';
   private formData: FORMDATA = {};
+  private isAdmin = false;
   // private formData: FORMDATA = {
   //   id: '123456789123456789',
   //   name: 'testman',
@@ -153,6 +156,7 @@ export default class Home extends Vue {
 
   private mounted() {
     this.loginUser = user.get() as user.User;
+    this.isAdmin = utils.IsAdmin();
     this.RegisterWeUI();
     this.RequestRegisterData();
   }
