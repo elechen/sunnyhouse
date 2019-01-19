@@ -69,6 +69,30 @@ const router = new Router({
         title: '阳光公寓-合约',
       },
     },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import(/* webpackChunkName: "register" */ './views/Register.vue'),
+      meta: {
+        title: '阳光公寓-注册',
+      },
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: () => import(/* webpackChunkName: "order" */ './views/Order.vue'),
+      meta: {
+        title: '阳光公寓-账单',
+      },
+    },
+    {
+      path: '/genorder',
+      name: 'genorder',
+      component: () => import(/* webpackChunkName: "genorder" */ './views/GenOrder.vue'),
+      meta: {
+        title: '阳光公寓-账单',
+      },
+    },
   ],
 });
 

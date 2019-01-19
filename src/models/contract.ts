@@ -2,6 +2,7 @@
 export interface DATA {
   openid?: string;
   contractid?: string;
+  orderid?: string[];
   room?: number;
   rent?: number;
   watercnt?: number;
@@ -9,6 +10,7 @@ export interface DATA {
   fromdate?: string;
   todate?: string;
   confirm?: number; // 签约后才会有
+  [key: string]: any;
 }
 
 export const PropDesc: { [key: string]: string } = {

@@ -51,7 +51,7 @@
           </div>
           <div class="weui-cell__bd">
             <input
-              v-model="formData.room"
+              v-model.number="formData.room"
               class="weui-input"
               required
               type="number"
@@ -67,7 +67,7 @@
           <div class="weui-cell__bd">
             <input
               class="weui-input"
-              v-model="formData.rent"
+              v-model.number="formData.rent"
               required
               type="number"
               placeholder="请输入月租"
@@ -83,7 +83,7 @@
           <div class="weui-cell__bd">
             <input
               class="weui-input"
-              v-model="formData.watercnt"
+              v-model.number="formData.watercnt"
               required
               type="number"
               placeholder="请输入水表读数"
@@ -99,7 +99,7 @@
           <div class="weui-cell__bd">
             <input
               class="weui-input"
-              v-model="formData.electricitycnt"
+              v-model.number="formData.electricitycnt"
               required
               type="number"
               placeholder="请输入电表读数"
@@ -173,7 +173,8 @@
       </div>
     </div>
     <div v-if="isAdmin" class="weui-btn-area">
-      <a class="weui-btn weui-btn_primary" @click="onSubmit">生成合约</a>
+      <a v-if="contractid" class="weui-btn weui-btn_primary" @click="onGenOrder">生成订单</a>
+      <a class="weui-btn weui-btn_primary" @click="onSubmit">{{contractid ? '修改合约' : '生成合约'}}</a>
     </div>
     <div v-else-if="!formData.confirm" class="weui-btn-area">
       <a class="weui-btn weui-btn_primary" @click="onConfirm">签订合约</a>
@@ -195,14 +196,16 @@ export default class Contract extends Vue {
   private registerData: register.DATA = {};
   private formData: contract.DATA = {};
   private isAdmin = false;
+  private contractid = '';
   private mounted() {
     this.isAdmin = utils.IsAdmin();
     this.RequestContractInfo();
   }
   private RequestContractInfo() {
-    const contractid = this.$route.query.contractid;
+    const contractid = this.$route.query.contractid as string;
     const openid = this.$route.query.openid as string;
     if (contractid) {
+      this.contractid = contractid;
       const host = define.API_HOST;
       const api = host + '/sunnyhouse/contract?contractid=' + contractid;
       Vue.axios.get(api).then((response) => {
@@ -250,6 +253,10 @@ export default class Contract extends Vue {
       }
     },
     );
+  }
+
+  private onGenOrder() {
+    this.$router.push('genorder?contractid=' + this.contractid);
   }
 
   private PostFormData() {

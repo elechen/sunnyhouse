@@ -43,7 +43,7 @@
     <div>
       <div class="weui-cells__title">合约列表</div>
       <div class="weui-cells">
-        <div v-if="registerData.contractid">
+        <div v-if="registerData.contractid && registerData.contractid.length > 0">
           <a
             class="weui-cell weui-cell_access"
             v-for="(id, idx) in registerData.contractid"
