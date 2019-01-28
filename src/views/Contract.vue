@@ -172,8 +172,38 @@
         </div>
       </div>
     </div>
+    <div>
+      <div class="weui-cells__title">订单列表</div>
+      <div class="weui-cells">
+        <div v-if="formData.orderid && formData.orderid.length > 0">
+          <a
+            class="weui-cell weui-cell_access"
+            v-for="(id, idx) in formData.orderid"
+            :key="idx"
+            @click="showOrder(id)"
+          >
+            <div class="weui-cell__bd">
+              <p>订单{{idx+1}}</p>
+            </div>
+            <div class="weui-cell__ft"></div>
+          </a>
+        </div>
+        <div v-else>
+          <div class="weui-loadmore weui-loadmore_line">
+            <span class="weui-loadmore__tips">暂无订单</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="isAdmin" class="weui-cells">
+      <a v-if="contractid" class="weui-cell weui-cell_access" @click="onGenOrder">
+        <div class="weui-cell__bd">
+          <p>新建订单</p>
+        </div>
+        <div class="weui-cell__ft"></div>
+      </a>
+    </div>
     <div v-if="isAdmin" class="weui-btn-area">
-      <a v-if="contractid" class="weui-btn weui-btn_primary" @click="onGenOrder">生成订单</a>
       <a class="weui-btn weui-btn_primary" @click="onSubmit">{{contractid ? '修改合约' : '生成合约'}}</a>
     </div>
     <div v-else-if="!formData.confirm" class="weui-btn-area">
@@ -314,6 +344,11 @@ export default class Contract extends Vue {
       weui.alert('网络异常:' + reason);
     });
   }
+
+  private showOrder(orderid: string) {
+    this.$router.push('/order?orderid=' + orderid);
+  }
+
 }
 
 </script>

@@ -1,9 +1,9 @@
-
 export interface DATA {
   orderid?: string;
-  room?: number;
-  openid?: string;
   createdtime?: number;
+  openid?: string;
+  contractid?: string;
+  room?: number;
   // 费用列表
   rent?: number;
   deposit?: number;
@@ -26,11 +26,12 @@ export interface DATA {
 }
 
 export const PropDesc: { [key: string]: string } = {
-  orderid: '商户订单号',
+  orderid: '订单号',
+  createdtime: '创建时间',
   rent: '租金',
   deposit: '押金',
   wifi: 'Wi-Fi',
-  trash: '垃圾处理',
+  trash: '垃圾处理费',
   water: '水费',
   electricity: '电费',
   total: '总计',

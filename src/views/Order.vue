@@ -9,9 +9,20 @@
           </div>
           <div class="weui-cell__ft">{{GetPropValue(key)}}</div>
         </div>
-        <div v-if="!orderInfo.transaction_id" class="weui-btn-area">
+        <a @click="onSwitchRecord" class="weui-cell weui-cell_link">
+          <div class="weui-cell__bd">{{isShowRec?'收起抄表记录':'展开抄表记录'}}</div>
+        </a>
+        <div v-if="isShowRec">
+          <div v-for="(key, index) in recordProps" :key="index" class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>{{GetPropName(key)}}</p>
+            </div>
+            <div class="weui-cell__ft">{{GetPropValue(key)}}</div>
+          </div>
+        </div>
+        <div v-if="!orderData.transaction_id" class="weui-btn-area">
           <a class="weui-btn weui-btn_primary" @click="onPay()">支付</a>
-        </div>Î
+        </div>
       </div>
     </div>
     <div v-else>
@@ -38,6 +49,14 @@ import * as order from '@/models/order';
 import * as define from '@/defines/define';
 import * as utils from '@/utils/utils';
 
+interface WX_ORDER {
+  timestamp: number;
+  nonceStr: string;
+  package: string;
+  signType: string;
+  paySign?: string;
+}
+
 @Component
 export default class Order extends Vue {
   private loginUser: user.User = {};
@@ -45,6 +64,7 @@ export default class Order extends Vue {
   private orderData: order.DATA = {};
   private allOrderData: { [key: string]: order.DATA } = {};
   private isShowOneOrder = false;
+  private isShowRec = false;
 
   private mounted() {
     this.loginUser = user.get() as user.User;
@@ -60,10 +80,10 @@ export default class Order extends Vue {
   private RequestOrderData(orderid: string) {
     if (orderid) {
       const host = define.API_HOST;
-      const api = host + '/sunnyhouse/orderid?orderid=' + orderid;
+      const api = host + '/sunnyhouse/order?orderid=' + orderid;
       Vue.axios.get(api).then((response) => {
         const data = response.data;
-        console.log('OrderInfo', data);
+        console.log('orderData', data);
         if (data && data.code === 'SUCCESS') {
           this.orderData = data.data as order.DATA;
         }
@@ -136,9 +156,11 @@ export default class Order extends Vue {
   private GetPropValue(prop: string) {
     const o = this.orderData;
     if (prop === 'water') {
-      return `(${o.lastwatercnt}-${o.watercnt})*2.5=${o.water}`;
+      return `( ${o.watercnt} - ${o.lastwatercnt} ) * 2.5 = ${o.water}`;
     } else if (prop === 'electricity') {
-      return `(${o.lastelectricitycnt}-${o.electricitycnt})*2.5=${o.electricity}`;
+      return `( ${o.electricitycnt} - ${o.lastelectricitycnt} ) * 1.5 = ${o.electricity}`;
+    } else if (prop === 'createdtime') {
+      return new Date(this.orderData[prop] as number).toLocaleString();
     } else {
       return this.orderData[prop];
     }
@@ -146,19 +168,70 @@ export default class Order extends Vue {
 
   private onPay() {
     if (this.orderData.orderid) {
-      console.log('开始支付->', this.orderData.orderid);
+      const host = define.API_HOST;
+      const api = `${host}/pay/unifiedorder`;
+      const orderIdx = (this.orderData.fromdate as string).substring(0, 7);
+      const body = `${this.orderData.room}房${orderIdx}期账单`;
+      const totalFee = (this.orderData.total as number) * 100;
+      const openid = this.loginUser.openid;
+      const params = { openid, body, out_trade_no: this.orderData.orderid, total_fee: totalFee };
+      Vue.axios.get(api, { params }).then((response) => {
+        const data = response.data;
+        console.log(response.data);
+        if (data.code === 'SUCCESS') {
+          this.wxPay(data.data);
+        } else {
+          weui.alert('支付异常：' + data.msg);
+        }
+      });
     }
+  }
+
+  private wxPay(prepayData: { [key: string]: any }) {
+    console.log('wxPay->', prepayData);
+    function onBridgeReady() {
+      WeixinJSBridge.invoke(
+        'getBrandWCPayRequest', {
+          ...prepayData,
+        },
+        (res: any) => {
+          console.log('wxPayCallback', res);
+          if (res.err_msg === 'get_brand_wcpay_request:ok') {
+            // 使用以上方式判断前端返回,微信团队郑重提示：
+            // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+          }
+        });
+    }
+    if (typeof WeixinJSBridge === 'undefined') {
+      if (document.addEventListener) {
+        document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+      } else if (document.attachEvent) {
+        document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+        document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+      }
+    } else {
+      onBridgeReady();
+    }
+  }
+
+  private onSwitchRecord() {
+    this.isShowRec = !this.isShowRec;
   }
 
   get showProps() {
     const props = ['orderid', 'createdtime',
       'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity', 'total',
-      'lastwatercnt', 'lastelectricitycnt', 'watercnt', 'electricitycnt',
-      'fromdate', 'todate', 'transaction_id'];
+    ];
     if (this.orderData.finishedtime) {
+      props.push('transaction_id');
       props.push('finishedtime');
     }
     return props;
+  }
+
+  get recordProps() {
+    return ['lastwatercnt', 'watercnt', 'lastelectricitycnt', 'electricitycnt',
+      'fromdate', 'todate'];
   }
 
   get sortedOrder() {

@@ -22,7 +22,8 @@ export function get(): User | undefined {
     return JSON.parse(cache);
   } else if (define.DEV) {
     return {
-      openid: '10000',
+      // openid: '10000',
+      openid: 'o7tJq08kMDWwUfW9dBE7B-xjNC3w',
       nickname: '陈晓峰',
       headimgurl: 'http://thirdwx.qlogo.cn/mmopen/vi_32/lJrubpXQ6BfZauRwkwRNSDWKGxRY78tEsicoFxt43kMiabkj0FP78wBJ7CgiaQO6iaqBJnQGUCPXia07ZiaoelJdzkjA/132',
     };

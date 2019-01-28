@@ -36,6 +36,7 @@
             <input
               class="weui-input"
               v-model.number="formData.rent"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入月租"
@@ -51,6 +52,7 @@
             <input
               class="weui-input"
               v-model.number="formData.deposit"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入押金"
@@ -98,6 +100,7 @@
             <input
               class="weui-input"
               v-model.number="formData.wifi"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入Wi-Fi费用"
@@ -113,6 +116,7 @@
             <input
               class="weui-input"
               v-model.number="formData.trash"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入垃圾处理费"
@@ -131,6 +135,7 @@
               required
               type="number"
               placeholder="请输入总计费用"
+              disabled="disabled"
             >
           </div>
         </div>
@@ -145,6 +150,7 @@
             <input
               class="weui-input"
               v-model.number="formData.lastwatercnt"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入上次水表读数"
@@ -159,6 +165,7 @@
             <input
               class="weui-input"
               v-model.number="formData.watercnt"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入当次水表读数"
@@ -173,6 +180,7 @@
             <input
               class="weui-input"
               v-model.number="formData.lastelectricitycnt"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入上次电表读数"
@@ -187,6 +195,7 @@
             <input
               class="weui-input"
               v-model.number="formData.electricitycnt"
+              @blur="onInputBlur"
               required
               type="number"
               placeholder="请输入当次电表读数"
@@ -292,6 +301,7 @@ export default class GenOrder extends Vue {
 
   private InitFormData(contractid: string) {
     const formData = this.formData;
+    formData.contractid = contractid;
     formData.trash = 5;
     formData.fromdate = new Date().toJSON().substr(0, 10);
     formData.todate = new Date().toJSON().substr(0, 10);
@@ -377,18 +387,19 @@ export default class GenOrder extends Vue {
     });
   }
 
-  @Watch('formData', { deep: true, immediate: false })
-  private onFormChange(newVal: order.DATA, oldVal: order.DATA) {
+  private onInputBlur() {
+    this.CalcTotal();
+  }
+
+  private CalcTotal() {
     let total = 0;
-    console.log(JSON.stringify(this.formData));
-    total += newVal.rent as number;
-    total += newVal.deposit as number;
-    total += newVal.water as number;
-    total += newVal.electricity as number;
-    total += newVal.wifi as number;
-    total += newVal.trash as number;
-    console.log('new->' + JSON.stringify(newVal));
-    console.log('old->' + JSON.stringify(oldVal));
+    const form = this.formData;
+    total += form.rent as number;
+    total += form.deposit as number;
+    total += form.water as number;
+    total += form.electricity as number;
+    total += form.wifi as number;
+    total += form.trash as number;
     this.formData.total = total;
   }
 
@@ -398,9 +409,9 @@ export default class GenOrder extends Vue {
     this.formData.water = (now - pre) * 2.5;
     return this.formData.water;
   }
+
   get electricityFee() {
     const now = this.formData.electricitycnt ? this.formData.electricitycnt : 0;
-    console.log('electricitycnt=>', now);
     const pre = this.formData.lastelectricitycnt ? this.formData.lastelectricitycnt : 0;
     this.formData.electricity = (now - pre) * 1.5;
     return this.formData.electricity;
