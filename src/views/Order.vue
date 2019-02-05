@@ -57,6 +57,8 @@ interface WX_ORDER {
   paySign?: string;
 }
 
+declare let WeixinJSBridge: { invoke: any };
+
 @Component
 export default class Order extends Vue {
   private loginUser: user.User = {};
@@ -205,9 +207,9 @@ export default class Order extends Vue {
     if (typeof WeixinJSBridge === 'undefined') {
       if (document.addEventListener) {
         document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
-      } else if (document.attachEvent) {
-        document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
-        document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+      } else if ((document as any).attachEvent) {
+        (document as any).attachEvent('WeixinJSBridgeReady', onBridgeReady);
+        (document as any).attachEvent('onWeixinJSBridgeReady', onBridgeReady);
       }
     } else {
       onBridgeReady();
