@@ -176,7 +176,8 @@ export default class Order extends Vue {
       const body = `${this.orderData.room}房${orderIdx}期账单`;
       const totalFee = (this.orderData.total as number) * 100;
       const openid = this.loginUser.openid;
-      const params = { openid, body, out_trade_no: this.orderData.orderid, total_fee: totalFee };
+      const params = { openid, body, out_trade_no: this.orderData.orderid.replace(/-/g, ''), total_fee: totalFee };
+      console.log('pay->', params);
       Vue.axios.get(api, { params }).then((response) => {
         const data = response.data;
         console.log(response.data);
