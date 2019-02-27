@@ -44,4 +44,5 @@ export const PropDesc: { [key: string]: string } = {
   todate: '结束时间',
   // 微信支付订单号，如果有则认为已支付
   transaction_id: '微信订单号',
+  finishedtime: '支付时间'
 };
