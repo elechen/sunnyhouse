@@ -176,7 +176,7 @@ export default class Order extends Vue {
       const body = `${this.orderData.room}房${orderIdx}期账单`;
       const totalFee = (this.orderData.total as number) * 100;
       const openid = this.loginUser.openid;
-      const params = { openid, body, out_trade_no: this.orderData.orderid.replace(/-/g, ''), total_fee: totalFee };
+      const params = { openid, body, out_trade_no: this.orderData.orderid, total_fee: totalFee };
       console.log('pay->', params);
       Vue.axios.get(api, { params }).then((response) => {
         const data = response.data;
@@ -192,6 +192,7 @@ export default class Order extends Vue {
 
   private wxPay(prepayData: { [key: string]: any }) {
     console.log('wxPay->', prepayData);
+    const that = this;
     function onBridgeReady() {
       WeixinJSBridge.invoke(
         'getBrandWCPayRequest', {
@@ -202,6 +203,7 @@ export default class Order extends Vue {
           if (res.err_msg === 'get_brand_wcpay_request:ok') {
             // 使用以上方式判断前端返回,微信团队郑重提示：
             // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+            that.RequestOrderData(that.$route.query.orderid as string);
           }
         });
     }
